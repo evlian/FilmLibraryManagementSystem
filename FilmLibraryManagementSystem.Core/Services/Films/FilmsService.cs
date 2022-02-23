@@ -25,18 +25,17 @@ namespace FilmLibraryManagementSystem.Core.Services.Films
             _context = context;
         }
 
-        public async Task<Film> AddFilm(Film film, CancellationToken cancellation)
+        public async Task<Film> AddFilm(AddFilmCommand command, CancellationToken cancellation)
         {
-            ICollection<Genre> genres = film.Genres;
-            film.Genres = null;
+            Film film = new() { Description = command.FilmDescription, Director = command.FilmDirector, Title = command.FilmTitle, Length = command.Length , ReleaseDate = command.FilmReleaseDate};
             _context.Add(film);
             await _context.SaveChangesAsync();
             var filmContext = _context.Films.Include(x => x.Genres)
                             .Include(x => x.Genres)
                             .Single(x => x.Title == film.Title);
-            foreach (Genre genre in genres)
+            foreach (string genre in command.FilmGenres)
             {
-                var existing = await _context.Genres.SingleOrDefaultAsync(g => g.Name.Equals(genre.Name));
+                var existing = await _context.Genres.SingleOrDefaultAsync(g => g.Name.Equals(genre));
                 filmContext.Genres.Add(existing);
             }
             await _context.SaveChangesAsync();

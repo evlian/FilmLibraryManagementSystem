@@ -1,4 +1,5 @@
 ﻿using FilmLibraryManagementSystem.Model;
+using FilmLibraryManagementSystem.Model.General.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace FilmLibraryManagementSystem.Core.Services.Films
         public Task<Film> GetFilmById(int id, CancellationToken cancellationToken);
         public Task<List<Film>> GetFilmsByTitle(string title, CancellationToken cancellationToken);
         public Task<Film> GetRandomFilm(CancellationToken cancellationToken);
-        public Task<Film> AddFilm(Film film, CancellationToken cancellation);
+        public Task<Film> AddFilm(AddFilmCommand film, CancellationToken cancellation);
         
     }
 }

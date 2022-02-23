@@ -1,7 +1,5 @@
-﻿using FilmLibraryManagementSystem.Controllers;
-using FilmLibraryManagementSystem.Data;
+﻿using FilmLibraryManagementSystem.Data;
 using FilmLibraryManagementSystem.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;

@@ -32,11 +32,10 @@ namespace FilmLibraryManagementSystem
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FilmLibraryManagementSystem", Version = "v1" });
             });
 
-            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+            services.RegisterControllers();
             services.AddMediatRExtension();
             services.AddCommandHandlers();
             services.AddQueryHandlers();
-            services.AddFluentValidationExtension();
             services.AddServices();
             services.AddDbContext<FilmLibraryContext>(builder => {
                 if (!builder.IsConfigured)

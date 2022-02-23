@@ -1,4 +1,5 @@
-﻿using FluentValidation.AspNetCore;
+﻿using FilmLibraryManagementSystem.Core.Framework.Validation.Films.Queries;
+using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -6,9 +7,15 @@ namespace FilmLibraryManagementSystem.App.Extensions.DependencyInjection
 {
     public static class FluentValidationDependencyInjectionExtension
     {
-        public static void AddFluentValidationExtension(this IServiceCollection services)
+        public static void AddFluentValidationExtension(this IMvcBuilder mvc)
         {
-            services.AddFluentValidation();
+            mvc.AddFluentValidation(opt => {
+                var assemblies = new Assembly[] {
+                    typeof(GetFilmByIdValidation).Assembly,
+                };
+                opt.RegisterValidatorsFromAssemblies(assemblies);
+                opt.ImplicitlyValidateChildProperties = true;
+            });
         }
     }
 }

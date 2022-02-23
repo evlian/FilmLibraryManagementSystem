@@ -5,7 +5,7 @@ namespace FilmLibraryManagementSystem.Model.General.Queries
 {
     public class GetFilmByIdQuery : IRequest<GetFilmByIdResult>
     {
-
+        [JsonIgnore]
         public int Id { get; set; }
     }
 }

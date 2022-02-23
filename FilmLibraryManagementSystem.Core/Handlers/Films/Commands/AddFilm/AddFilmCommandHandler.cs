@@ -16,7 +16,7 @@ namespace FilmLibraryManagementSystem.Core.Handlers.Films.Commands.AddFilm
         }
         public async Task<AddFilmResponse> Handle(AddFilmCommand request, CancellationToken cancellationToken)
         {
-            return new AddFilmResponse() { Film = await _filmsService.AddFilm(request.Film, cancellationToken) };
+            return new AddFilmResponse() { Film = await _filmsService.AddFilm(request, cancellationToken) };
         }
     }
 }

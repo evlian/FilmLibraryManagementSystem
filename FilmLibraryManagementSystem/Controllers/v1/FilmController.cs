@@ -1,5 +1,7 @@
 ﻿
 using FilmLibraryManagementSystem.App.Controllers;
+using FilmLibraryManagementSystem.Core.Extensions.Validation;
+using FilmLibraryManagementSystem.Core.Framework.Validation.Films.Queries;
 using FilmLibraryManagementSystem.Data;
 using FilmLibraryManagementSystem.Model;
 using FilmLibraryManagementSystem.Model.General.Commands;
@@ -8,8 +10,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -35,18 +35,24 @@ namespace FilmLibraryManagementSystem.Controllers
         }
 
         [HttpGet("get/{id:int}")]
-        public async Task<GetFilmByIdResult> GetFilmById(int id) 
+        public async Task<ActionResult<GetFilmByIdResult>> GetFilmById([FromRoute]int id) 
         {
-            GetFilmByIdQuery query = new GetFilmByIdQuery();
-            query.Id = id;
+            var query = new GetFilmByIdQuery();
+            var validator = new GetFilmByIdValidation().Validate(query);
+            if (!validator.IsValid) 
+            {
+                return BadRequest(validator.Errors);
+            }
             return await Mediator.Send(query);
         }
 
         [HttpPost("add")]
-        public async Task<AddFilmResponse> AddFilm([FromBody] Film film)
+        public async Task<ActionResult<AddFilmResponse>> AddFilm([FromBody] AddFilmCommand command)
         {
-            var command = new AddFilmCommand();
-            command.Film = film;
+            if (!ModelState.IsValid) 
+            {
+                return BadRequest(ModelState.GetErrorMessages());
+            }
             return await Mediator.Send(command);
         }
 
