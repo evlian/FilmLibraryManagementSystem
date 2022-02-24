@@ -37,6 +37,7 @@ namespace FilmLibraryManagementSystem
             services.AddCommandHandlers();
             services.AddQueryHandlers();
             services.AddServices();
+            services.AddMappingWithProfiles();
             services.AddDbContext<FilmLibraryContext>(builder => {
                 if (!builder.IsConfigured)
                     builder.UseSqlServer("Data Source= (LocalDb)\\MSSQLLocalDB; Initial Catalog=FilmLibrary");

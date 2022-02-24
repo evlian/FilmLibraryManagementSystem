@@ -1,8 +1,10 @@
-﻿using FilmLibraryManagementSystem.Core.Services.Films;
+﻿using AutoMapper;
+using FilmLibraryManagementSystem.Core.Services.Films;
 using FilmLibraryManagementSystem.Model;
 using FilmLibraryManagementSystem.Model.General.Queries;
 using MediatR;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,10 +13,12 @@ namespace FilmLibraryManagementSystem.Core.Handlers.Films.Queries.GetAllFilms
     public class GetAllFilmsHandler : IRequestHandler<GetAllFilmsQuery, GetAllFilmsResult>
     {
         private readonly IFilmsService _filmsService;
+        private readonly IMapper _mapper;
 
-        public GetAllFilmsHandler(IFilmsService service) 
+        public GetAllFilmsHandler(IFilmsService service, IMapper mapper) 
         {
             _filmsService = service;
+            _mapper = mapper;
         }
 
         public async Task<GetAllFilmsResult> Handle(GetAllFilmsQuery request, CancellationToken cancellationToken)
@@ -24,16 +28,8 @@ namespace FilmLibraryManagementSystem.Core.Handlers.Films.Queries.GetAllFilms
             result.AllFilms = new List<FilmModel>();
             foreach (Film film in films) 
             {
-                var f = new FilmModel();
-                f.Id = film.FilmId;
-                f.Title = film.Title;
-                f.Director = film.Director;
-                f.Description = film.Description;
-                f.Length = film.Length.ToString();
-                foreach (Genre genre in film.Genres)
-                {
-                    f.Genre.Add(genre.Name);
-                }
+                var f = _mapper.Map<FilmModel>(film);
+                f.Genre = film.Genres.Select(g => g.Name).ToList();
                 result.AllFilms.Add(f);
             }
             return result;

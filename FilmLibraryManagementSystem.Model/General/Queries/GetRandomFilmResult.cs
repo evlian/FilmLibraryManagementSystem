@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FilmLibraryManagementSystem.Model.General.Queries
+﻿namespace FilmLibraryManagementSystem.Model.General.Queries
 {
     public class GetRandomFilmResult
     {
-        public Film Film { get; set; }
+        public FilmModel Film { get; set; }
     }
 }

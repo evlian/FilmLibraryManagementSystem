@@ -7,15 +7,15 @@ namespace FilmLibraryManagementSystem.Core.Framework.Validation.Films.Commands.A
     {
         public AddFilmValidation()
         { 
-            RuleFor(x => x.FilmTitle)
+            RuleFor(x => x.Title)
                 .NotEmpty()
                 .WithMessage("Film Tite cannot be empty!");
 
-            RuleFor(x => x.FilmDirector)
+            RuleFor(x => x.Director)
                 .NotEmpty()
                 .WithMessage("Director cannot be empty!");
 
-            RuleFor(x => x.FilmDescription)
+            RuleFor(x => x.Description)
                 .NotEmpty()
                 .WithMessage("Description cannot be empty!");
   

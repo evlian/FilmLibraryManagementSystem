@@ -2,6 +2,6 @@
 {
     public class GetFilmByIdResult
     {
-        public Film Film { get; set; }
+        public FilmModel Film { get; set; }
     }
 }

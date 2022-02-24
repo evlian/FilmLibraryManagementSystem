@@ -24,7 +24,6 @@ namespace FilmLibraryManagementSystem.Controllers
 
         public FilmController(ILogger<FilmController> logger, IMediator mediator) : base(mediator)
         {
-
             _logger = logger;
         }
 
@@ -37,7 +36,7 @@ namespace FilmLibraryManagementSystem.Controllers
         [HttpGet("get/{id:int}")]
         public async Task<ActionResult<GetFilmByIdResult>> GetFilmById([FromRoute]int id) 
         {
-            var query = new GetFilmByIdQuery();
+            var query = new GetFilmByIdQuery() { Id = id };
             var validator = new GetFilmByIdValidation().Validate(query);
             if (!validator.IsValid) 
             {

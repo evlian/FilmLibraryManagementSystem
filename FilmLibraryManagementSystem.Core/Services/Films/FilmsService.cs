@@ -27,7 +27,7 @@ namespace FilmLibraryManagementSystem.Core.Services.Films
 
         public async Task<Film> AddFilm(AddFilmCommand command, CancellationToken cancellation)
         {
-            Film film = new() { Description = command.FilmDescription, Director = command.FilmDirector, Title = command.FilmTitle, Length = command.Length , ReleaseDate = command.FilmReleaseDate};
+            Film film = new() { Description = command.Description, Director = command.Director, Title = command.Title, Length = command.Length , ReleaseDate = command.FilmReleaseDate};
             _context.Add(film);
             await _context.SaveChangesAsync();
             var filmContext = _context.Films.Include(x => x.Genres)
