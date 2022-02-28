@@ -10,7 +10,7 @@ namespace FilmLibraryManagementSystem.Model.General.Commands
         public string Director { get; set; }
         public string Description { get; set; }
         public int Length { get; set; }
-        public DateTime FilmReleaseDate { get; set; }
+        public DateTime ReleaseDate { get; set; }
         public ICollection<string> FilmGenres { get; set; }
     }
 }

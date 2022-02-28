@@ -10,8 +10,5 @@ namespace FilmLibraryManagementSystem.App.Middlewares
         {
             _next = next;
         }
-
-
-
     }
 }

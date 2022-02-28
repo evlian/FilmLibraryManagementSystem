@@ -1,43 +1,33 @@
-﻿using FilmLibraryManagementSystem.Data;
-using FilmLibraryManagementSystem.Model;
+﻿using FilmLibraryManagementSystem.Model.General.Commands.Genres;
+using FilmLibraryManagementSystem.Model.General.Queries.Genres;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace FilmLibraryManagementSystem.App.Controllers
 {
     [Route("api/genres")]
     [ApiController]
-    public class GenreController : ControllerBase
+    public class GenreController : BaseController
     {
         private readonly ILogger<GenreController> _logger;
-        private readonly static FilmLibraryContext _context = new FilmLibraryContext();
 
-        public GenreController(ILogger<GenreController> logger)
+        public GenreController(ILogger<GenreController> logger, IMediator mediator) : base(mediator)
         {
             _logger = logger;
         }
 
         [HttpGet]
-        public IEnumerable<Genre> GetAllGenres()
+        public async Task<GetAllGenresResult> GetAllGenres()
         {
-            return _context.Genres.ToList();
+            return await Mediator.Send(new GetAllGenresQuery());
         }
 
         [HttpPost("add")]
-        public IActionResult AddGenre([FromBody]Genre genre)
+        public async Task<AddGenreResponse> AddGenre([FromBody] AddGenreCommand command)
         {
-            if (genre.Name == string.Empty)
-                return BadRequest("Please enter a name for your genre!");
-            var genreExists = from g in _context.Films
-                        where g.Title == genre.Name
-                        select true;
-            if (genreExists.FirstOrDefault().Equals(true))
-                return BadRequest("A genre with that name already exists!");
-            _context.Add(new Genre { Name = genre.Name});
-            _context.SaveChanges();
-            return Ok("Action completed successfully!");
+            return await Mediator.Send(command);
         }
     }
 }

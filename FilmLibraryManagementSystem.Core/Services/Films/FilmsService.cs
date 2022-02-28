@@ -27,7 +27,7 @@ namespace FilmLibraryManagementSystem.Core.Services.Films
 
         public async Task<Film> AddFilm(AddFilmCommand command, CancellationToken cancellation)
         {
-            Film film = new() { Description = command.Description, Director = command.Director, Title = command.Title, Length = command.Length , ReleaseDate = command.FilmReleaseDate};
+            Film film = new() { Description = command.Description, Director = command.Director, Title = command.Title, Length = command.Length , ReleaseDate = command.ReleaseDate};
             _context.Add(film);
             await _context.SaveChangesAsync();
             var filmContext = _context.Films.Include(x => x.Genres)
@@ -39,6 +39,23 @@ namespace FilmLibraryManagementSystem.Core.Services.Films
                 filmContext.Genres.Add(existing);
             }
             await _context.SaveChangesAsync();
+            return film;
+        }
+
+        public async Task<Film> EditFilm(Film film, int id, CancellationToken cancellationToken)
+        {
+            film.FilmId = id;
+            var oldFilm = _context.Films.Where(film => film.FilmId == id).SingleOrDefault();
+            if (film.Title != null)
+                oldFilm.Title = film.Title;
+            if (film.Description != null)
+                oldFilm.Description = film.Description;
+            if (film.Director != null)
+                oldFilm.Director = film.Director;
+            if (film.ReleaseDate != DateTime.MinValue)
+                oldFilm.ReleaseDate = film.ReleaseDate;
+            _context.Entry(oldFilm).State = EntityState.Modified;
+            await _context.SaveChangesAsync(cancellationToken);
             return film;
         }
 

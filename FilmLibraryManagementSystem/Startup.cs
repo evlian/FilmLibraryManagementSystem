@@ -1,8 +1,5 @@
 using FilmLibraryManagementSystem.App.Extensions.DependencyInjection;
-using FilmLibraryManagementSystem.Core.Services.Films;
 using FilmLibraryManagementSystem.Data;
-using FluentValidation.AspNetCore;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System.Text.Json.Serialization;
 
 namespace FilmLibraryManagementSystem
 {
@@ -37,12 +33,15 @@ namespace FilmLibraryManagementSystem
             services.AddCommandHandlers();
             services.AddQueryHandlers();
             services.AddServices();
+            
             services.AddMappingWithProfiles();
+            services.AddConfigurations(Configuration);
             services.AddDbContext<FilmLibraryContext>(builder => {
                 if (!builder.IsConfigured)
-                    builder.UseSqlServer("Data Source= (LocalDb)\\MSSQLLocalDB; Initial Catalog=FilmLibrary");
+                    builder.UseSqlServer(Configuration.GetSection("Database").GetSection("FilmLibraryConnectionString").Value);
             
             });
+            services.AddMigrations();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

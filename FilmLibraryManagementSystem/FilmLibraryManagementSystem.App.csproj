@@ -22,6 +22,7 @@
   <ItemGroup>
 	  <ProjectReference Include="..\FilmLibraryManagementSystem.Core\FilmLibraryManagementSystem.Core.csproj" />
 	  <ProjectReference Include="..\FilmLibraryManagementSystem.Model\FilmLibraryManagementSystem.Model.csproj" />
+	  <ProjectReference Include="..\FilmLibraryManagementSystem.Migration\FilmLibraryManagementSystem.Migration.csproj" />
   </ItemGroup>
 
     <ItemGroup>

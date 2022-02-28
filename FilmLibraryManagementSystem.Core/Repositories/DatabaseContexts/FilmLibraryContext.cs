@@ -1,5 +1,8 @@
 ﻿using FilmLibraryManagementSystem.Model;
 using Microsoft.EntityFrameworkCore;
+using System;
+using Microsoft.Extensions.Configuration;
+using FilmLibraryManagementSystem.Model.Entitites;
 
 namespace FilmLibraryManagementSystem.Data
 {
@@ -7,22 +10,19 @@ namespace FilmLibraryManagementSystem.Data
     {
         public DbSet<Film> Films { get; set; }
         public DbSet<Genre> Genres { get; set; }
+        public DbSet<User> Users { get; set; }
 
-        public FilmLibraryContext() 
-        { }
+        public FilmLibraryContext(string connectionString) : base(GetOptions(connectionString))
+        {
+        }
 
-        public FilmLibraryContext(DbContextOptions<FilmLibraryContext> options)
-        { }
+        public FilmLibraryContext(DbContextOptions<FilmLibraryContext> options) : base(options)
+        {
+        }
 
         private static DbContextOptions GetOptions(string connectionString)
         {
             return SqlServerDbContextOptionsExtensions.UseSqlServer(new DbContextOptionsBuilder(), connectionString).Options;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Data Source= (LocalDb)\\MSSQLLocalDB; Initial Catalog=FilmLibrary");
-            base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,6 +35,11 @@ namespace FilmLibraryManagementSystem.Data
                     .WithMany().HasForeignKey(x => x.GenreId),
                     x => x.HasOne(x => x.Film)
                     .WithMany().HasForeignKey(x => x.FilmId));
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
         }
     }
 }

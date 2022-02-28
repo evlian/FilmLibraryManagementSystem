@@ -5,6 +5,7 @@ using FilmLibraryManagementSystem.Core.Framework.Validation.Films.Queries;
 using FilmLibraryManagementSystem.Data;
 using FilmLibraryManagementSystem.Model;
 using FilmLibraryManagementSystem.Model.General.Commands;
+using FilmLibraryManagementSystem.Model.General.Commands.Films;
 using FilmLibraryManagementSystem.Model.General.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,6 @@ namespace FilmLibraryManagementSystem.Controllers
     public class FilmController : BaseController
     {
         private readonly ILogger<FilmController> _logger;
-        private readonly static FilmLibraryContext _context = new FilmLibraryContext();
 
         public FilmController(ILogger<FilmController> logger, IMediator mediator) : base(mediator)
         {
@@ -68,20 +68,10 @@ namespace FilmLibraryManagementSystem.Controllers
             return await Mediator.Send(new GetFilmsByTitleQuery() { Title = title});
         }
 
-        [HttpPut("{id:int}")]
-        public IActionResult EditFilm(int id, [FromBody]Film film)
+        [HttpPut]
+        public async Task<IActionResult> EditFilm([FromBody]EditFilmCommand command)
         {
-            if ((id <= 0 && id > _context.Films.Count()) || film == null)
-                return BadRequest();
-            film.FilmId = id;
-            var oldFilm = _context.Films.Where(film => film.FilmId == id).SingleOrDefault();
-            oldFilm.Title = film.Title;
-            oldFilm.Description = film.Description;
-            oldFilm.Director = film.Director;
-            oldFilm.ReleaseDate = film.ReleaseDate;
-            _context.Entry(oldFilm).State = EntityState.Modified;
-            _context.SaveChanges();
-            return Ok(_context.Films.Find(id));
+            return Ok(await Mediator.Send(command));
         }
     }
 }

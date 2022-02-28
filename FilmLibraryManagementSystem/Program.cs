@@ -6,10 +6,8 @@ namespace FilmLibraryManagementSystem
 {
     public class Program
     {
-        private static FilmLibraryContext _context = new FilmLibraryContext();
         public static void Main(string[] args)
         {
-            _context.Database.EnsureCreated();
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -19,7 +17,5 @@ namespace FilmLibraryManagementSystem
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-
-        
     }
 }
