@@ -1,16 +1,14 @@
 ﻿using Pixond.Data;
-using Pixond.Model;
-using Pixond.Model.General.Commands;
-using Pixond.Model.General.Queries;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Pixond.Model.Entities;
+using Pixond.Model.General.Commands.Films;
+using Pixond.Model.General.Commands.Films.AddFilm;
 
 namespace Pixond.Core.Services.Films
 {
@@ -28,24 +26,29 @@ namespace Pixond.Core.Services.Films
         public async Task<Film> AddFilm(AddFilmCommand command, CancellationToken cancellation)
         {
             Film film = new() { Description = command.Description, Director = command.Director, Title = command.Title, Length = command.Length , ReleaseDate = command.ReleaseDate};
+            film.CreatedAt = DateTime.Now;
+            film.CreatedBy = command.CreatedBy;
+            film.ModifiedAt = DateTime.Now;
+            film.ModifiedBy = command.CreatedBy;
             _context.Add(film);
             await _context.SaveChangesAsync();
-            var filmContext = _context.Films.Include(x => x.Genres)
-                            .Include(x => x.Genres)
-                            .Single(x => x.Title == film.Title);
+            var filmContext = _context.Films
+                                .Include(x => x.Genres)
+                                .Include(x => x.Genres)
+                                .First(x => x.Title == film.Title);
             foreach (string genre in command.FilmGenres)
             {
-                var existing = await _context.Genres.SingleOrDefaultAsync(g => g.Name.Equals(genre));
+                var existing = await _context.Genres.FirstOrDefaultAsync(g => g.Name.Equals(genre));
                 filmContext.Genres.Add(existing);
             }
             await _context.SaveChangesAsync();
-            return film;
+            return filmContext;
         }
 
         public async Task<Film> EditFilm(Film film, int id, CancellationToken cancellationToken)
         {
             film.FilmId = id;
-            var oldFilm = _context.Films.Where(film => film.FilmId == id).SingleOrDefault();
+            var oldFilm = await GetFilmById(id, cancellationToken);
             if (film.Title != null)
                 oldFilm.Title = film.Title;
             if (film.Description != null)
@@ -69,14 +72,16 @@ namespace Pixond.Core.Services.Films
             return await _context.Films.FindAsync(id);
         }
 
-        public Task<List<Film>> GetFilmsByTitle(string title, CancellationToken cancellationToken)
+        public async Task<List<Film>> GetFilmsByTitle(string title, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return await _context.Films.Include(g => g.Genres).Where(film => film.Title == title).ToListAsync();
         }
 
-        public Task<Film> GetRandomFilm(CancellationToken cancellationToken)
+        public async Task<Film> GetRandomFilm(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return await _context.Films.Include(g => g.Genres).OrderBy(x => Guid.NewGuid()).Take(1).FirstOrDefaultAsync(cancellationToken);
         }
+
+        
     }
 }

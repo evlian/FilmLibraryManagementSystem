@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Pixond.Migration.Database.Tables.FilmGenre
 {
-    [Migration(202202261211, "CreateFilmGenreTable")]
+    [Migration(202203031313, "CreateFilmGenreTable")]
     [ExcludeFromCodeCoverage]
     public class CreateFIlmGenreTable : FluentMigrator.Migration
     {

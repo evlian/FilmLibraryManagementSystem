@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Pixond.Model;
-using Pixond.Model.General.Commands.Genres;
+using Pixond.Model.General.Commands.Genres.AddGenre;
 
 namespace Pixond.Core.Framework.Mapping.Genres.Commands.AddGenre
 {

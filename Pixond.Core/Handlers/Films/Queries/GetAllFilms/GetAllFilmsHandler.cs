@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Pixond.Core.Services.Films;
-using Pixond.Model;
-using Pixond.Model.General.Queries;
 using MediatR;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Pixond.Model.Entities;
+using Pixond.Model.General.Queries.Films;
+using Pixond.Model.General.Queries.Films.GetAllFilms;
 
 namespace Pixond.Core.Handlers.Films.Queries.GetAllFilms
 {
@@ -25,7 +25,6 @@ namespace Pixond.Core.Handlers.Films.Queries.GetAllFilms
         {
             GetAllFilmsResult result = new GetAllFilmsResult();
             var films = await _filmsService.GetAllFilms(cancellationToken);
-            result.AllFilms = new List<FilmModel>();
             foreach (Film film in films) 
             {
                 var f = _mapper.Map<FilmModel>(film);

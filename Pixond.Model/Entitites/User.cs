@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Pixond.Model.Entitites
 {
@@ -9,5 +10,6 @@ namespace Pixond.Model.Entitites
         public string Username { get; set; }
         [JsonIgnore]
         public string Password { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

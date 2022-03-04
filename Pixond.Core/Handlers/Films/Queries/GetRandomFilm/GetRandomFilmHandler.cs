@@ -1,12 +1,11 @@
-﻿using Pixond.Data;
-using Pixond.Model.General.Queries;
-using MediatR;
-using System.Linq;
-using System;
+﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using Pixond.Core.Services.Films;
 using AutoMapper;
+using Pixond.Model.General.Queries.Films.GetRandomFilm;
+using Pixond.Model.General.Queries.Films.GetAllFilms;
+using System.Linq;
 
 namespace Pixond.Core.Handlers.Films.Queries.GetRandomFilm
 {
@@ -22,10 +21,13 @@ namespace Pixond.Core.Handlers.Films.Queries.GetRandomFilm
         }
         public async Task<GetRandomFilmResult> Handle(GetRandomFilmQuery request, CancellationToken cancellationToken)
         {
-            return new GetRandomFilmResult() 
-            { 
-                Film = _mapper.Map<FilmModel>(await _filmsService.GetRandomFilm(cancellationToken))
-            };
+            var randomFilmResult = new GetRandomFilmResult();
+            var film = await _filmsService.GetRandomFilm(cancellationToken);
+            randomFilmResult.Film = _mapper.Map<FilmModel>(await _filmsService.GetRandomFilm(cancellationToken));
+            var f = _mapper.Map<FilmModel>(film);
+            f.Genre = film.Genres.Select(g => g.Name).ToList();
+            randomFilmResult.Film = f;
+            return randomFilmResult;
         }
     }
 }

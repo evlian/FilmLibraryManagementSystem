@@ -1,6 +1,6 @@
-﻿using Pixond.Model;
-using Pixond.Model.General.Commands;
-using Pixond.Model.General.Queries;
+﻿using Pixond.Model.Entities;
+using Pixond.Model.General.Commands.Films;
+using Pixond.Model.General.Commands.Films.AddFilm;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

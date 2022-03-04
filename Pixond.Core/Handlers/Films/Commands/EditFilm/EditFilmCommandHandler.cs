@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using Pixond.Core.Services.Films;
-using Pixond.Model;
 using Pixond.Model.General.Commands.Films;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Pixond.Model.Entities;
+using Pixond.Model.General.Commands.Films.EditFilm;
 
 namespace Pixond.Core.Handlers.Films.Commands.EditFilm
 {

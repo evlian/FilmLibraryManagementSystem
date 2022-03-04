@@ -1,5 +1,4 @@
 using Pixond.App.Extensions.DependencyInjection;
-using Pixond.App.Middlewares;
 using Pixond.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Pixond
 {
@@ -27,6 +29,30 @@ namespace Pixond
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Pixond", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme 
+                { 
+                    In = ParameterLocation.Header,
+                    Description = "Enter a token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type=ReferenceType.SecurityScheme,
+                                Id="Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
             });
 
             services.RegisterControllers();
@@ -35,12 +61,36 @@ namespace Pixond
             services.AddQueryHandlers();
             services.AddServices();
             
+            services.AddHttpContextAccessor();
+            services.AddAuthentication(x => 
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    var key = Encoding.ASCII.GetBytes("secret string 123123");
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,  
+                    };
+                });
+
+
+            
             services.AddMappingWithProfiles();
             services.AddConfigurations(Configuration);
-            services.AddDbContext<FilmLibraryContext>(builder => {
+            services.AddDbContext<FilmLibraryContext>(builder =>
+            {
                 if (!builder.IsConfigured)
                     builder.UseSqlServer(Configuration.GetSection("Database").GetSection("FilmLibraryConnectionString").Value);
-            
+
             });
             services.AddMigrations();
         }
@@ -57,9 +107,8 @@ namespace Pixond
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseMiddleware<AuthorizationMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

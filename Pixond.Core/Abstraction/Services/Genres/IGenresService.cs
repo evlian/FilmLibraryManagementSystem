@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Pixond.Model.General.Commands.Genres;
+using Pixond.Model.General.Queries.Genres.GetAllGenres;
 
 namespace Pixond.Core.Abstraction.Services.Genres
 {

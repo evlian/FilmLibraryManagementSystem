@@ -1,5 +1,6 @@
-﻿using Pixond.Model.General.Queries;
-using FluentValidation;
+﻿using FluentValidation;
+using Pixond.Model.General.Queries.Films;
+using Pixond.Model.General.Queries.Films.GetFilmById;
 
 namespace Pixond.Core.Framework.Validation.Films.Queries
 {

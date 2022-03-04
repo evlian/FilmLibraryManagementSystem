@@ -7,5 +7,7 @@ namespace Pixond.Core.Abstraction.Services.Users
     {
         Task<User> RegisterUser(User user);
         Task<User> AuthenticateUser(User user);
+        Task<User> GetUserById(int id);
+        Task<bool> IsUsernameTaken(string username);
     }
 }

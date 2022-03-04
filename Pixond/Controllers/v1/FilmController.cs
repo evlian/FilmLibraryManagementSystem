@@ -2,21 +2,25 @@
 using Pixond.App.Controllers;
 using Pixond.Core.Extensions.Validation;
 using Pixond.Core.Framework.Validation.Films.Queries;
-using Pixond.Data;
-using Pixond.Model;
-using Pixond.Model.General.Commands;
 using Pixond.Model.General.Commands.Films;
-using Pixond.Model.General.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Pixond.Model.General.Queries.Films;
+using System.Linq;
+using Pixond.Model.Response;
+using Pixond.Model.General.Queries.Films.GetAllFilms;
+using Pixond.Model.General.Queries.Films.GetFilmById;
+using Pixond.Model.General.Commands.Films.AddFilm;
+using Pixond.Model.General.Queries.Films.GetRandomFilm;
+using Pixond.Model.General.Queries.Films.GetFilmsByTitle;
+using Pixond.Model.General.Commands.Films.EditFilm;
 
 namespace Pixond.Controllers
 {
-    [Route("api/films")]
+    [Route("api/v1/films")]
     [ApiController]
     public class FilmController : BaseController
     {
@@ -27,34 +31,56 @@ namespace Pixond.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [HttpGet]
-        public async Task<GetAllFilmsResult> GetAllFilms()
+        public async Task<ActionResult<ResponseModel<GetAllFilmsResult>>> GetAllFilms()
         {
-            return await Mediator.Send(new GetAllFilmsQuery());
+            var response = new ResponseModel<GetAllFilmsResult>();
+
+            var filmsResult = await Mediator.Send(new GetAllFilmsQuery());
+            if (filmsResult.AllFilms == null)
+                return NotFound(response.AddMessage("No data was found!").NotFound());
+            return Ok(response.Ok(filmsResult));
         }
 
-        [HttpGet("get/{id:int}")]
-        public async Task<ActionResult<GetFilmByIdResult>> GetFilmById([FromRoute]int id) 
+        [HttpGet("id/{id:int}")]
+        public async Task<ActionResult<ResponseModel<GetFilmByIdResult>>> GetFilmById([FromRoute]int id) 
         {
+            var response = new ResponseModel<GetFilmByIdResult>();
             var query = new GetFilmByIdQuery() { Id = id };
             var validator = new GetFilmByIdValidation().Validate(query);
-            if (!validator.IsValid) 
+            if (!validator.IsValid)
             {
-                return BadRequest(validator.Errors);
+                response.AddError("Invalid ID", "ID must not be 0 or less than 0.");
+                return BadRequest(response.BadRequest());
+                
             }
-            return await Mediator.Send(query);
+            var film = await Mediator.Send(query);
+            if (film.Film == null)
+                return NotFound(response.AddMessage("No data was found!").NotFound());
+            return Ok(response.Ok(film));
         }
 
+        [Authorize]
         [HttpPost("add")]
-        public async Task<ActionResult<AddFilmResponse>> AddFilm([FromBody] AddFilmCommand command)
+        public async Task<ActionResult<ResponseModel<AddFilmResponse>> >AddFilm([FromBody] AddFilmCommand command)
         {
+            var response = new ResponseModel<AddFilmResponse>();
+            int id = -1;
+            int.TryParse(HttpContext.User.Claims.FirstOrDefault().Value, out id);
+            if (id == -1) 
+            {
+                return Unauthorized(response.Unauthorized().AddMessage("User is not authorized!"));
+            }
+            command.CreatedBy = id;
             if (!ModelState.IsValid) 
             {
-                return BadRequest(ModelState.GetErrorMessages());
+                response.AddErrors(ModelState.GetErrorMessages());
+                BadRequest(response.BadRequest());
             }
-            return await Mediator.Send(command);
+            var addFilmResponse = await Mediator.Send(command);
+            return Ok(response.Ok(addFilmResponse));
         }
-
 
         [HttpGet("random")]
         public async Task<GetRandomFilmResult> GetRandom()
@@ -62,16 +88,25 @@ namespace Pixond.Controllers
             return await Mediator.Send(new GetRandomFilmQuery());
         }
 
-        [HttpGet("{title}")]
-        public async Task<GetFilmsByTitleResult> GetFilmByTitle(string title)
+        [HttpGet("title/{title}")]
+        public async Task<ActionResult<ResponseModel<GetFilmsByTitleResult>>> GetFilmByTitle([FromRoute]string title)
         {
-            return await Mediator.Send(new GetFilmsByTitleQuery() { Title = title});
+            var query = new GetFilmsByTitleQuery();
+            query.Title = title;
+            var response = new ResponseModel<GetFilmsByTitleResult>();
+            var result = await Mediator.Send(query);
+            if (result.Films == null)
+                return NotFound(response.AddMessage("No data was found!").NotFound());
+            return Ok(response.Ok(result));
         }
 
+        [Authorize]
         [HttpPut]
-        public async Task<IActionResult> EditFilm([FromBody]EditFilmCommand command)
+        public async Task<ActionResult<ResponseModel<EditFilmResponse>>> EditFilm([FromBody]EditFilmCommand command)
         {
-            return Ok(await Mediator.Send(command));
+            var response = new ResponseModel<EditFilmResponse>();
+            var editFilmResponse = await Mediator.Send(command);
+            return Ok(response.Ok(editFilmResponse));
         }
     }
 }

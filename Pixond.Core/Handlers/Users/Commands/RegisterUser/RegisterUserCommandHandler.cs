@@ -4,6 +4,10 @@ using Pixond.Model.General.Commands.Users;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Pixond.Core.Tools;
+using System.Collections.Generic;
+using Pixond.Core.Utilities;
+using Pixond.Model.General.Commands.Users.RegisterUser;
 
 namespace Pixond.Core.Handlers.Users.Commands.RegisterUser
 {
@@ -17,12 +21,21 @@ namespace Pixond.Core.Handlers.Users.Commands.RegisterUser
         }
         public async Task<RegisterUserResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            User user = new User();
+            var user = new User();
             user.Username = request.Username;
-            user.Password = request.Password;
+            user.Password = PasswordUtilities.EncryptPassword(request.Password);
             user.Name = request.Name;
-            await _service.RegisterUser(user);
-            return new RegisterUserResponse();
+            var response = new RegisterUserResponse();
+            if (await _service.IsUsernameTaken(user.Username))
+            {
+                response.Errors.TryAdd("username", new List<string>() { "Username is taken!" });
+                return response;
+            }
+            response.User = await _service.RegisterUser(user);
+            response.Token = TokenUtilities.GenerateToken(response.User);
+            return response;
         }
+
+        
     }
 }

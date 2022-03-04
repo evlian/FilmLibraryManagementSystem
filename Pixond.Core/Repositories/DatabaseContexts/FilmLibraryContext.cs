@@ -1,8 +1,7 @@
 ﻿using Pixond.Model;
 using Microsoft.EntityFrameworkCore;
-using System;
-using Microsoft.Extensions.Configuration;
 using Pixond.Model.Entitites;
+using Pixond.Model.Entities;
 
 namespace Pixond.Data
 {

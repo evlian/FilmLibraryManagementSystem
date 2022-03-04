@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using Pixond.Core.Services.Films;
-using Pixond.Data;
-using Pixond.Model.General.Queries;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Pixond.Model.General.Queries.Films;
+using Pixond.Model.General.Queries.Films.GetFilmById;
+using Pixond.Model.General.Queries.Films.GetAllFilms;
 
 namespace Pixond.Core.Handlers.Films.Queries.GetAllFilms
 {
@@ -21,9 +22,11 @@ namespace Pixond.Core.Handlers.Films.Queries.GetAllFilms
 
         public async Task<GetFilmByIdResult> Handle(GetFilmByIdQuery request, CancellationToken cancellationToken)
         {
+            var film = await _filmsService.GetFilmById(request.Id, cancellationToken);
+            var filmModel = _mapper.Map<FilmModel>(film);
             return new GetFilmByIdResult
             {
-                Film = _mapper.Map<FilmModel>(await _filmsService.GetFilmById(request.Id, cancellationToken))
+                Film = filmModel,
             };
         }
     }

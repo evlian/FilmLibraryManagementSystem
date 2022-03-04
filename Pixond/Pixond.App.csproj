@@ -26,7 +26,7 @@
   </ItemGroup>
 
     <ItemGroup>
-		<PackageReference Include="DotPulsar" Version="0.11.0" />
+		<PackageReference Include="DotPulsar" Version="2.2.0" />
     </ItemGroup>
 
 </Project>

@@ -31,11 +31,23 @@ namespace Pixond.Core.Services.Users
             return found;
         }
 
+        public async Task<User> GetUserById(int id)
+        {
+            return await _context.Users.SingleOrDefaultAsync(e => e.UserId == id);
+        }
+
         public async Task<User> RegisterUser(User user)
         {
+            user.CreatedAt = DateTime.Now;
             await _context.AddAsync(user);
             await _context.SaveChangesAsync();
-            return user;
+            return await AuthenticateUser(user);
+        }
+
+        public async Task<bool> IsUsernameTaken(string username)
+        {
+            var result = await _context.Users.Where(u => u.Username == username).FirstOrDefaultAsync();
+            return result != null;
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Pixond.Core.Abstraction.Services.Genres;
 using Pixond.Model;
-using Pixond.Model.General.Commands.Genres;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Pixond.Model.General.Commands.Genres.AddGenre;
 
 namespace Pixond.Core.Handlers.Genres.Commands.AddGenre
 {

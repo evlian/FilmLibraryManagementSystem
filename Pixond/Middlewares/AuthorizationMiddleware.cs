@@ -1,4 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
+using Pixond.Core.Abstraction.Services.Users;
+using System.IdentityModel.Tokens.Jwt;
+using System;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Pixond.App.Middlewares
@@ -12,10 +18,8 @@ namespace Pixond.App.Middlewares
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
-        {
-            context.Items.Add("isAuthorized", false);
-            await _next(context);
-        }
+        //public async Task Invoke(HttpContext context, IUsersService usersService)
+        //{
+        //}
     }
 }
